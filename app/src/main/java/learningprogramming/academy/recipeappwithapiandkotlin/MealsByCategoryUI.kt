@@ -28,11 +28,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun MealsByCategoryUI(category: String) {
+fun MealsByCategoryUI(category: Category) {
     val recipeViewModel: MainViewModel = viewModel()
     val viewState by recipeViewModel.mealsState
 
-    recipeViewModel.fetchMealsByCategory(category)
+    recipeViewModel.fetchMealsByCategory(category.strCategory)
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -52,9 +52,9 @@ fun MealsByCategoryUI(category: String) {
 }
 
 @Composable
-fun MealCategoryScreen(category: String, meals: List<Meal>) {
+fun MealCategoryScreen(category: Category, meals: List<Meal>) {
     Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(category, style = MaterialTheme.typography.headlineLarge)
+        Text(category.strCategory, style = MaterialTheme.typography.headlineLarge)
         Spacer(Modifier.fillMaxWidth().padding(12.dp))
         LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize()) {
             items(meals, key = { it.idMeal }) { meal ->

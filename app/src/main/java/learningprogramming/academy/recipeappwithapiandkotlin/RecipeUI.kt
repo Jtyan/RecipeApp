@@ -16,7 +16,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,10 +27,9 @@ import coil.compose.rememberAsyncImagePainter
 
 
 @Composable
-fun RecipeUI(navigationToMealsByCategoryUI: (String) -> Unit) {
+fun RecipeUI(modifier: Modifier, viewState:MainViewModel.RecipeState, navigationToMealsByCategoryUI: (Category) -> Unit) {
     val recipeViewModel: MainViewModel = viewModel()
-    val viewState by recipeViewModel.categoriesState
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         when {
             viewState.loading -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -53,7 +51,7 @@ fun RecipeUI(navigationToMealsByCategoryUI: (String) -> Unit) {
 }
 
 @Composable
-fun CategoryScreen(categories: List<Category>, onCategoryClick: (String) -> Unit) {
+fun CategoryScreen(categories: List<Category>, onCategoryClick: (Category) -> Unit) {
     Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Ingredients", style = MaterialTheme.typography.headlineLarge)
         Spacer(Modifier.fillMaxWidth().padding(12.dp))
@@ -70,12 +68,12 @@ fun CategoryScreen(categories: List<Category>, onCategoryClick: (String) -> Unit
 
 
 @Composable
-fun CategoryItem(category: Category, onClick: (String) -> Unit) {
+fun CategoryItem(category: Category, onClick: (Category) -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxSize()
-            .clickable { onClick(category.strCategory) },
+            .clickable { onClick(category) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
