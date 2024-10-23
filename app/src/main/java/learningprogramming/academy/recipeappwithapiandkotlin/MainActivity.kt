@@ -19,28 +19,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             RecipeAppWithApiAndKotlinTheme {
                 Scaffold() { innerPadding ->
-                    RecipeApp(Modifier.fillMaxSize().padding(innerPadding))
+                    RecipeApp(Modifier.fillMaxSize().padding(innerPadding), navController = navController)
                 }
             }
         }
     }
 }
 
-@Composable
-fun RecipeApp(modifier: Modifier) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "RecipeUI", modifier = modifier) {
-        composable("RecipeUI"){
-            RecipeUI {categoryName ->
-                navController.navigate("MealsByCategoryUI/$categoryName")
-            }
-        }
-        composable("MealsByCategoryUI/{name}"){
-            val name = it.arguments?.getString("name") ?:""
-            MealsByCategoryUI(name)
-        }
-    }
-}
+
 
