@@ -1,6 +1,7 @@
 package learningprogramming.academy.recipeappwithapiandkotlin
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun MealsByCategoryUI(category: Category) {
+fun MealsByCategoryUI(category: Category, navigationToMealDetailScreen: (Meal) -> Unit) {
     val recipeViewModel: MainViewModel = viewModel()
     val viewState by recipeViewModel.mealsState
 
@@ -45,32 +46,39 @@ fun MealsByCategoryUI(category: Category) {
             }
 
             else -> {
-                MealCategoryScreen(category, meals = viewState.list)
+                MealCategoryScreen(category, meals = viewState.list,
+                    onMealClick = { meal ->
+                        navigationToMealDetailScreen(meal)
+                    })
             }
         }
     }
 }
 
 @Composable
-fun MealCategoryScreen(category: Category, meals: List<Meal>) {
+fun MealCategoryScreen(category: Category, meals: List<Meal>, onMealClick:(Meal) -> Unit) {
     Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(category.strCategory, style = MaterialTheme.typography.headlineLarge)
-        Spacer(Modifier.fillMaxWidth().padding(12.dp))
+        Spacer(
+            Modifier
+                .fillMaxWidth()
+                .padding(12.dp))
         LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize()) {
             items(meals, key = { it.idMeal }) { meal ->
 
-                MealsByCategoryItem(meal = meal)
+                MealsByCategoryItem(meal = meal, onMealClick = onMealClick)
             }
         }
     }
 }
 
 @Composable
-fun MealsByCategoryItem(meal: Meal) {
+fun MealsByCategoryItem(meal: Meal, onMealClick: (Meal) -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clickable { onMealClick(meal) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(

@@ -26,7 +26,17 @@ fun RecipeApp(modifier: Modifier, navController: NavHostController) {
                 .previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<Category>("cat") ?: Category("", "", "", "")
-            MealsByCategoryUI(category = category)
+            MealsByCategoryUI(category, navigationToMealDetailScreen = {
+                navController.currentBackStackEntry?.savedStateHandle?.set("meal", it)
+                navController.navigate(Screen.MealDetailScreen.route)
+            })
+        }
+        composable(route = Screen.MealDetailScreen.route) {
+            val meal = navController
+                .previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<Meal>("meal") ?: Meal("","","","","")
+            MealDetailScreen(modifier = modifier, meal)
         }
     }
 }
