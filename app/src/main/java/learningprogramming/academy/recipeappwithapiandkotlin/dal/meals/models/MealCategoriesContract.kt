@@ -1,14 +1,14 @@
-package learningprogramming.academy.recipeappwithapiandkotlin
+package learningprogramming.academy.recipeappwithapiandkotlin.dal.meals.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Category(
+data class MealCategoriesContract(
     val idCategory: String,
     val strCategory: String,
     val strCategoryThumb: String,
     val strCategoryDescription: String
 ): Parcelable
 
-data class CategoriesResponse(val categories: List<Category>)
+data class MealCategoriesResponse(val categories: List<MealCategoriesContract>)

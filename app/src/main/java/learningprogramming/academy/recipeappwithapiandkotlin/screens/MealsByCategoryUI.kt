@@ -1,4 +1,4 @@
-package learningprogramming.academy.recipeappwithapiandkotlin
+package learningprogramming.academy.recipeappwithapiandkotlin.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -27,26 +27,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import learningprogramming.academy.recipeappwithapiandkotlin.MainViewModel
+import learningprogramming.academy.recipeappwithapiandkotlin.dal.meals.models.MealCategoriesContract
+import learningprogramming.academy.recipeappwithapiandkotlin.models.MealSummaryModel
 
 @Composable
-fun MealsByCategoryUI(category: Category, navigationToMealDetailScreen: (Meal) -> Unit) {
+fun MealsByCategoryUI(
+    modifier: Modifier,
+    mealCategoriesContract: MealCategoriesContract,
+    navigationToMealDetailScreen: (MealSummaryModel) -> Unit
+) {
     val recipeViewModel: MainViewModel = viewModel()
-    val viewState by recipeViewModel.mealsState
+    val mealsByCategoryState by recipeViewModel.mealsByCategoryState
 
-    recipeViewModel.fetchMealsByCategory(category.strCategory)
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    recipeViewModel.fetchMealsByCategory(mealCategoriesContract.strCategory)
+
+    Box(modifier = modifier.fillMaxSize()) {
         when {
-            viewState.loading -> {
+            mealsByCategoryState.isLoading -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
-            viewState.error != null -> {
+            mealsByCategoryState.error != null -> {
                 Text("Error Occurred!")
             }
 
             else -> {
-                MealCategoryScreen(category, meals = viewState.list,
+                MealCategoryScreen(mealCategoriesContract, meals = mealsByCategoryState.list,
                     onMealClick = { meal ->
                         navigationToMealDetailScreen(meal)
                     })
@@ -56,13 +64,18 @@ fun MealsByCategoryUI(category: Category, navigationToMealDetailScreen: (Meal) -
 }
 
 @Composable
-fun MealCategoryScreen(category: Category, meals: List<Meal>, onMealClick:(Meal) -> Unit) {
+fun MealCategoryScreen(
+    mealCategoriesContract: MealCategoriesContract,
+    meals: List<MealSummaryModel>,
+    onMealClick: (MealSummaryModel) -> Unit
+) {
     Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(category.strCategory, style = MaterialTheme.typography.headlineLarge)
+        Text(mealCategoriesContract.strCategory, style = MaterialTheme.typography.headlineLarge)
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .padding(12.dp))
+                .padding(12.dp)
+        )
         LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize()) {
             items(meals, key = { it.idMeal }) { meal ->
 
@@ -73,7 +86,7 @@ fun MealCategoryScreen(category: Category, meals: List<Meal>, onMealClick:(Meal)
 }
 
 @Composable
-fun MealsByCategoryItem(meal: Meal, onMealClick: (Meal) -> Unit) {
+fun MealsByCategoryItem(meal: MealSummaryModel, onMealClick: (MealSummaryModel) -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)

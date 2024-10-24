@@ -1,4 +1,4 @@
-package learningprogramming.academy.recipeappwithapiandkotlin
+package learningprogramming.academy.recipeappwithapiandkotlin.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,23 +25,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import learningprogramming.academy.recipeappwithapiandkotlin.MainViewModel
+import learningprogramming.academy.recipeappwithapiandkotlin.dal.meals.models.MealCategoriesContract
 
 
 @Composable
-fun RecipeUI(modifier: Modifier, viewState:MainViewModel.RecipeState, navigationToMealsByCategoryUI: (Category) -> Unit) {
+fun CategoriesUI(modifier: Modifier, navigationToMealsByCategoryUI: (MealCategoriesContract) -> Unit) {
     val recipeViewModel: MainViewModel = viewModel()
+    val categoryState by recipeViewModel.categoriesState
+
+    recipeViewModel.fetchCategories()
     Box(modifier = modifier) {
         when {
-            viewState.loading -> {
+            categoryState.isLoading -> {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
-            viewState.error != null -> {
+            categoryState.error != null -> {
                 Text("Error Occurred!")
             }
 
             else -> {
-                CategoryScreen(categories = viewState.list,
+                CategoryScreen(categories = categoryState.list,
                     onCategoryClick = { category ->
                         navigationToMealsByCategoryUI(category)
                     }
@@ -51,14 +57,14 @@ fun RecipeUI(modifier: Modifier, viewState:MainViewModel.RecipeState, navigation
 }
 
 @Composable
-fun CategoryScreen(categories: List<Category>, onCategoryClick: (Category) -> Unit) {
+fun CategoryScreen(categories: List<MealCategoriesContract>, onCategoryClick: (MealCategoriesContract) -> Unit) {
     Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Ingredients", style = MaterialTheme.typography.headlineLarge)
         Spacer(Modifier.fillMaxWidth().padding(12.dp))
         LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize()) {
             items(categories) { category ->
                 CategoryItem(
-                    category = category,
+                    mealCategoriesContract = category,
                     onClick = onCategoryClick
                 )
             }
@@ -68,23 +74,23 @@ fun CategoryScreen(categories: List<Category>, onCategoryClick: (Category) -> Un
 
 
 @Composable
-fun CategoryItem(category: Category, onClick: (Category) -> Unit) {
+fun CategoryItem(mealCategoriesContract: MealCategoriesContract, onClick: (MealCategoriesContract) -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxSize()
-            .clickable { onClick(category) },
+            .clickable { onClick(mealCategoriesContract) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = rememberAsyncImagePainter(category.strCategoryThumb),
+            painter = rememberAsyncImagePainter(mealCategoriesContract.strCategoryThumb),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
                 .aspectRatio(1f),
         )
         Text(
-            text = category.strCategory,
+            text = mealCategoriesContract.strCategory,
             color = Color.Black,
             style = TextStyle(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(top = 4.dp)
